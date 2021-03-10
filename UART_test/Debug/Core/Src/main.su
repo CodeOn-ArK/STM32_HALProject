@@ -1,0 +1,4 @@
+main.c:23:5:main	40	static
+main.c:58:6:SystemClockConfig	4	static
+main.c:63:6:UART2_Init	8	static
+main.c:81:6:Err_Handler	4	static
