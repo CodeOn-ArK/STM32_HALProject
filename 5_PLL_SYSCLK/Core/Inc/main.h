@@ -38,12 +38,20 @@ extern "C" {
 #include<stdint.h>
 #include<stdio.h>
 
+void SystemClockConfigHSI(uint8_t );
+void SystemClockConfigHSE(uint8_t );
+void UART2_Init(void);
+void Err_Handler(void);
+void CallUART(void);
+void GPIO_Init(void);
+
 #define TRUE 	1
 #define FALSE 	0
 
 #define RCC_SYSCLK_FREQ_25MHZ	25
 #define RCC_SYSCLK_FREQ_50MHZ	50
 #define RCC_SYSCLK_FREQ_120MHZ 	120
+#define RCC_SYSCLK_FREQ_180MHZ  180
 
 /* USER CODE END Includes */
 

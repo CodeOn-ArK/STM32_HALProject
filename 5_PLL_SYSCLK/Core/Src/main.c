@@ -8,43 +8,179 @@
 
 #include "main.h"
 
-void SystemClockConfig(uint8_t );
-void UART2_Init(void);
-void Err_Handler(void);
-void CallUART(void);
-void GPIO_Init(void);
+#define HSI 1		//replace HSE with HSI for using HSI
 
 UART_HandleTypeDef HUart2;
-char msg[20];
+char msg[50];
 
 int main(void)
 {
 	HAL_Init();
 
+#ifdef HSI
 #if 0
-	SystemClockConfig(RCC_SYSCLK_FREQ_25MHZ);
-	GPIO_Init();
+	SystemClockConfigHSI(RCC_SYSCLK_FREQ_25MHZ);
 	CallUART();
 #endif
 
 #if 0
-	SystemClockConfig(RCC_SYSCLK_FREQ_50MHZ);
-	GPIO_Init();
+	SystemClockConfigHSI(RCC_SYSCLK_FREQ_50MHZ);
 	CallUART();
 #endif
 
-	SystemClockConfig(RCC_SYSCLK_FREQ_120MHZ);
-	GPIO_Init();
+#if 1
+	SystemClockConfigHSI(RCC_SYSCLK_FREQ_180MHZ);
 	CallUART();
+#endif
+#endif
 
-	SystemClockConfig(RCC_SYSCLK_FREQ_50MHZ); //This line gives error
+#ifdef HSE
+
+#if 0
+	SystemClockConfigHSE(RCC_SYSCLK_FREQ_25MHZ);
 	CallUART();
+#endif
+
+#if 0
+	SystemClockConfigHSE(RCC_SYSCLK_FREQ_50MHZ);
+	CallUART();
+#endif
+
+#if 0
+	SystemClockConfigHSE(RCC_SYSCLK_FREQ_120MHZ);
+	CallUART();
+#endif
+
+#if 1
+	SystemClockConfigHSE(RCC_SYSCLK_FREQ_180MHZ);		//Available only with HSE
+	CallUART();
+#endif
+
+#endif
 
 	while(1);
+
 }
 
-void SystemClockConfig(uint8_t SysFreq)
+void SystemClockConfigHSE(uint8_t clk_freq)
 {
+
+	RCC_OscInitTypeDef OscInit;
+	RCC_ClkInitTypeDef ClkInit;
+
+	memset(&OscInit, 0, sizeof(OscInit));
+	memset(&ClkInit, 0 ,sizeof(ClkInit));
+
+	uint8_t FLatency = 0;
+
+	OscInit.OscillatorType 		= RCC_OSCILLATORTYPE_HSE;
+	OscInit.HSEState 			= RCC_HSE_BYPASS;
+	OscInit.PLL.PLLState 		= RCC_PLL_ON;
+	OscInit.PLL.PLLSource 		= RCC_PLLSOURCE_HSE;
+
+	switch(clk_freq)
+	{
+	case RCC_SYSCLK_FREQ_25MHZ:
+		OscInit.PLL.PLLM		= 8;
+		OscInit.PLL.PLLN		= 100;
+		OscInit.PLL.PLLP 		= 4;
+
+		ClkInit.ClockType 	  	= (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
+		ClkInit.SYSCLKSource  	= RCC_SYSCLKSOURCE_PLLCLK;
+		ClkInit.AHBCLKDivider 	= RCC_SYSCLK_DIV1;
+		ClkInit.APB1CLKDivider 	= RCC_HCLK_DIV1;
+		ClkInit.APB2CLKDivider 	= RCC_HCLK_DIV1;
+
+		FLatency = FLASH_ACR_LATENCY_0WS;
+
+		break;
+
+	case RCC_SYSCLK_FREQ_50MHZ:
+		OscInit.PLL.PLLM 		 = 8;
+		OscInit.PLL.PLLN 		 = 100;
+		OscInit.PLL.PLLP 		 = 2;
+
+		ClkInit.ClockType 	 	 = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
+		ClkInit.SYSCLKSource 	 = RCC_SYSCLKSOURCE_PLLCLK;
+		ClkInit.AHBCLKDivider	 = RCC_SYSCLK_DIV1;
+		ClkInit.APB1CLKDivider	 = RCC_HCLK_DIV2;
+		ClkInit.APB2CLKDivider	 = RCC_HCLK_DIV1;
+
+		FLatency = FLASH_ACR_LATENCY_1WS;
+
+		break;
+
+	case RCC_SYSCLK_FREQ_120MHZ:
+		OscInit.PLL.PLLM 		 = 4;
+		OscInit.PLL.PLLN 		 = 120;
+		OscInit.PLL.PLLP 		 = 2;
+
+		ClkInit.ClockType 	  	 = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
+		ClkInit.SYSCLKSource  	 = RCC_SYSCLKSOURCE_PLLCLK;
+		ClkInit.AHBCLKDivider 	 = RCC_SYSCLK_DIV1;
+		ClkInit.APB1CLKDivider 	 = RCC_HCLK_DIV4;
+		ClkInit.APB2CLKDivider 	 = RCC_HCLK_DIV2;
+
+		FLatency = FLASH_ACR_LATENCY_3WS;
+
+		break;
+
+	case RCC_SYSCLK_FREQ_180MHZ:
+
+		//Enable the clock for power controller
+		__HAL_RCC_PWR_CLK_ENABLE();
+
+		//Set regulator voltage scale as 1
+		__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+		//Turn on the over drive mode of the voltage regulator
+		__HAL_PWR_OVERDRIVE_ENABLE();
+
+		OscInit.PLL.PLLM 		 = 4;
+		OscInit.PLL.PLLN 		 = 180;
+		OscInit.PLL.PLLP 		 = 2;
+
+		ClkInit.ClockType 	  	 = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
+		ClkInit.SYSCLKSource  	 = RCC_SYSCLKSOURCE_PLLCLK;
+		ClkInit.AHBCLKDivider 	 = RCC_SYSCLK_DIV1;
+		ClkInit.APB1CLKDivider 	 = RCC_HCLK_DIV4;
+		ClkInit.APB2CLKDivider 	 = RCC_HCLK_DIV2;
+
+		FLatency = FLASH_ACR_LATENCY_5WS;
+
+		break;
+
+
+		}
+
+	if(HAL_RCC_OscConfig(&OscInit) != HAL_OK)
+	{
+		Err_Handler();
+	}
+
+	if(HAL_RCC_ClockConfig(&ClkInit, FLatency) != HAL_OK)
+	{
+		Err_Handler();
+	}
+
+	HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+	HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
+
+
+}
+
+void SystemClockConfigHSI(uint8_t SysFreq)
+{
+
+	if(SysFreq == RCC_SYSCLK_FREQ_180MHZ)
+	{
+		sprintf(msg, "180 MHz not supported for HSI");
+		HAL_UART_Transmit(&HUart2,(uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
+
+		sprintf(msg, "\nDefaulting to 50 MHz");
+		SystemClockConfigHSI(RCC_SYSCLK_FREQ_50MHZ);
+	}
+
 	RCC_OscInitTypeDef OscInit;
 	RCC_ClkInitTypeDef ClkInit;
 
@@ -120,7 +256,6 @@ void SystemClockConfig(uint8_t SysFreq)
 
 	HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 	HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
-
 
 }
 
