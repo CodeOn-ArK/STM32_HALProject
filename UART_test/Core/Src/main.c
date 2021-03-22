@@ -53,7 +53,7 @@ int main(void)
 	(void)pRxBuffer;
 	(void)len;
 	while(1);
-}UART_test2UART_test2
+}
 
 void SystemClockConfig(void)
 {

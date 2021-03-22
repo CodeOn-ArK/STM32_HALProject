@@ -28,34 +28,34 @@ endif
 
 -include ../makefile.defs
 
-BUILD_ARTIFACT_NAME := UART_test_IT
+BUILD_ARTIFACT_NAME := 3_UART_test_IT
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX := 
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME).$(BUILD_ARTIFACT_EXTENSION)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-UART_test_IT.elf \
+3_UART_test_IT.elf \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-UART_test_IT.list \
+3_UART_test_IT.list \
 
 OBJCOPY_BIN += \
-UART_test_IT.bin \
+3_UART_test_IT.bin \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: UART_test_IT.elf secondary-outputs
+main-build: 3_UART_test_IT.elf secondary-outputs
 
 # Tool invocations
-UART_test_IT.elf: $(OBJS) $(USER_OBJS) /home/ark/st/HAL_drivers/UART_test_IT/STM32F446RETX_FLASH.ld
-	arm-none-eabi-gcc -o "UART_test_IT.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/ark/st/HAL_drivers/UART_test_IT/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="UART_test_IT.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+3_UART_test_IT.elf: $(OBJS) $(USER_OBJS) /home/ark/st/HAL_drivers/3_UART_test_IT/STM32F446RETX_FLASH.ld
+	arm-none-eabi-gcc -o "3_UART_test_IT.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/ark/st/HAL_drivers/3_UART_test_IT/STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="3_UART_test_IT.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -64,13 +64,13 @@ default.size.stdout: $(EXECUTABLES)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-UART_test_IT.list: $(EXECUTABLES)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "UART_test_IT.list"
+3_UART_test_IT.list: $(EXECUTABLES)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "3_UART_test_IT.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-UART_test_IT.bin: $(EXECUTABLES)
-	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "UART_test_IT.bin"
+3_UART_test_IT.bin: $(EXECUTABLES)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "3_UART_test_IT.bin"
 	@echo 'Finished building: $@'
 	@echo ' '
 
