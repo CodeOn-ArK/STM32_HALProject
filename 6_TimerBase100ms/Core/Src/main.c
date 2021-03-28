@@ -24,13 +24,13 @@ int main(void)
 
 	CallUART();
 	//Timer starts working from here
-	HAL_TIM_Base_Start(&hTimer7);
+	HAL_TIM_Base_Start(&hTimer7);		//Timer ticks all the time, even if the processor goes to sleep!
 
 	//Loop until the update event flag is set
 	while(1){
 		while( TIM7->SR & TIM_SR_UIF )
 		{
-			TIM7->SR = 0;
+			TIM7->SR &= ~TIM_SR_UIF;
 			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 		}
 	}
