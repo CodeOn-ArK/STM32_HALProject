@@ -58,21 +58,23 @@ void HAL_TIM_IC_MspInit(TIM_HandleTypeDef *htim)
 	GPIO_InitTypeDef tim2ch1_gpio;
 	//1. Enable the clock for TIM2
 	__HAL_RCC_TIM2_CLK_ENABLE();
+	__HAL_RCC_GPIOA_CLK_ENABLE();
 
 	//2. Configure a gpio to behave as TIM2 channel 1
-	tim2ch1_gpio.Pin 		= GPIO_PIN_15;
+	tim2ch1_gpio.Pin 		= GPIO_PIN_0;
 	tim2ch1_gpio.Mode 		= GPIO_MODE_AF_PP;
 	tim2ch1_gpio.Pull 		= GPIO_NOPULL;
-	tim2ch1_gpio.Alternate  = GPIO_AF1_TIM1;
+	tim2ch1_gpio.Alternate  = GPIO_AF1_TIM2;
 	tim2ch1_gpio.Speed 		= GPIO_SPEED_LOW;
 
 	HAL_GPIO_Init(GPIOA, &tim2ch1_gpio);
 
 	//3. NVIC priority settings
-	HAL_NVIC_SetPriority(TIM2_IRQn, 10, 0);
+	HAL_NVIC_SetPriority(TIM2_IRQn, 00, 0);
 	HAL_NVIC_EnableIRQ(TIM2_IRQn);
 
 }
+
 /*******************************************************************************************************
  * 			THIS SECTION IS FOR USE WITH MAIN.C FILE TO DECLUTTER THE MAIN SECTION FROM UNWANTED
  * 												REFERENCES
