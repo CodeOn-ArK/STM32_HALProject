@@ -70,9 +70,17 @@ void HAL_TIM_IC_MspInit(TIM_HandleTypeDef *htim)
 	HAL_GPIO_Init(GPIOA, &tim2ch1_gpio);
 
 	//3. NVIC priority settings
-	HAL_NVIC_SetPriority(TIM2_IRQn, 00, 0);
+	HAL_NVIC_SetPriority(TIM2_IRQn, 01, 0);
 	HAL_NVIC_EnableIRQ(TIM2_IRQn);
 
+}
+
+void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
+{
+	__HAL_RCC_TIM7_CLK_ENABLE();
+
+	HAL_NVIC_EnableIRQ(TIM7_IRQn);
+	HAL_NVIC_SetPriority(TIM7_IRQn, 00, 0);
 }
 
 /*******************************************************************************************************

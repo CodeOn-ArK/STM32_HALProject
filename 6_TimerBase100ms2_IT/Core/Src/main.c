@@ -16,10 +16,10 @@ TIM_HandleTypeDef hTimer7;
 int main(void)
 {
 	HAL_Init();
-	//SystemClock_Config();
+	SystemClock_Config();
 	//SystemClockConfigHSE(RCC_SYSCLK_FREQ_25MHZ);
 
-	SystemClockConfigHSI(RCC_SYSCLK_FREQ_25MHZ);
+//	SystemClockConfigHSI(RCC_SYSCLK_FREQ_25MHZ);
 
 	UART2_Init();
 	GPIO_Init();
@@ -43,9 +43,9 @@ void TIMER7_Init()
 	 */
 	hTimer7.Instance = TIM7;
 	hTimer7.Init.CounterMode = TIM_COUNTERMODE_UP;
-	hTimer7.Init.Prescaler = 50;		//Calculations yield 49 but a value of 50 gives better o/p.\
+	hTimer7.Init.Prescaler = 49;		//Calculations yield 49 but a value of 50 gives better o/p.\
 											(always remember Pre->0 corresponds to divider value of 1)
-	hTimer7.Init.Period = 50000-1;
+	hTimer7.Init.Period = 32000 - 1;
 
 	if(HAL_TIM_Base_Init(&hTimer7) != HAL_OK)
 	{

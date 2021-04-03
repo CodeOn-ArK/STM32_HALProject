@@ -8,6 +8,7 @@
 #include "main.h"
 
 extern TIM_HandleTypeDef HTimer2;
+extern TIM_HandleTypeDef HTimer7;
 
 void SysTick_Handler(void)
 {
@@ -20,4 +21,9 @@ void SysTick_Handler(void)
 void TIM2_IRQHandler(void)
 {
 	HAL_TIM_IRQHandler(&HTimer2);
+}
+
+void TIM7_IRQHandler(void)
+{
+	HAL_TIM_IRQHandler(&HTimer7);
 }
