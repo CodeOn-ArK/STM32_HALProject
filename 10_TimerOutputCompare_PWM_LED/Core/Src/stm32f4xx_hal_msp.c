@@ -69,7 +69,7 @@ void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
 	 * PA10	--- >  Channel 3
 	 * PA2	--- >  Channel 4
 	 */
-	tim2_OC_gpio.Pin 		= GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_2;
+	tim2_OC_gpio.Pin 		= GPIO_PIN_8 ;
 	tim2_OC_gpio.Mode 		= GPIO_MODE_AF_PP;
 	tim2_OC_gpio.Pull 		= GPIO_NOPULL;
 	tim2_OC_gpio.Speed 		= GPIO_SPEED_FAST;
