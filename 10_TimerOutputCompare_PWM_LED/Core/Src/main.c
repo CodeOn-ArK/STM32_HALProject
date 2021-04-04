@@ -77,7 +77,7 @@ void TIMER2_Init()
 	htimer2.Instance 	     = TIM2;
 	htimer2.Init.CounterMode = TIM_COUNTERMODE_UP;
 	htimer2.Init.Prescaler 	 = 49;
-	htimer2.Init.Period 	 = 100 - 1;
+	htimer2.Init.Period 	 = 1000 - 1;
 	if(HAL_TIM_PWM_Init(&htimer2) != HAL_OK)
 	{
 		Err_Handler();
