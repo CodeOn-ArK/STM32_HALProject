@@ -34,7 +34,7 @@ int main(void)
 		Err_Handler();
 	}
 
-	SCB->SCR |= (1 << 1); //Or use HAL_PWR_EnableSleepOnExit()
+	//SCB->SCR |= (1 << 1); //Or use HAL_PWR_EnableSleepOnExit()
 
 	while(1);
 
