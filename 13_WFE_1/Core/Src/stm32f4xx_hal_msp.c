@@ -299,7 +299,7 @@ void SystemClockConfigHSI(uint8_t SysFreq)
 void UART2_Init(void)
 {
 	HUart2.Instance = USART2;
-	HUart2.Init.BaudRate = 9600; //460800; //Baud rate kept high to keep consumption low
+	HUart2.Init.BaudRate = 460800; //Baud rate kept high to keep consumption low
 	HUart2.Init.WordLength = UART_WORDLENGTH_8B;
 	HUart2.Init.StopBits = UART_STOPBITS_1;
 	HUart2.Init.Parity = UART_PARITY_NONE;

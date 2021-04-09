@@ -10,16 +10,17 @@
  * This project is aimed at reducing power consumption by limiting peripherals but not thier usages
  *
  * 1) Increasing UART speed to highest permissible and practical rate helps keeping current consumption low
- * 2) Use _WFI instruction in while loop;
- * 				whenever it executes the WFE instruction it enter low power
- * 				after an interrupt wakes up the processor; the execution continues after __WFI instruction(after serving ISR)
+ * 2)
  *************************************************************************************/
 
 #include "main.h"
 
 extern UART_HandleTypeDef HUart2;
 
+#define SEVONPEND 4
+
 void GPIO_AnalogConfig();
+char msg[50];
 
 int main(void)
 {
@@ -32,10 +33,32 @@ int main(void)
 	GPIO_Init();
 	UART2_Init();
 
+	//SCB->SCR |= (0x1 << SEVONPEND);
+
 	while(1)
 	{
-		__WFI(); //Wait for Interrupt
+
+		static int i = 0;
+		sprintf(msg,"Testing WFI instruction %d\n\r", i++);
+
+		//for(uint16_t j=0; j<300000; j++); doesn't works
+
+		if(HAL_UART_Transmit(&HUart2, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY) != HAL_OK)
+		{
+			Err_Handler();
+		}
+
+		/*
+		 * Processor needs to go to sleep but systick prevents it from going to sleep as it generates an event every 1ms
+		 * Hence to prevent systick from generating unnecessary events during sleep we suspend systick here
+		 */
+		HAL_SuspendTick();
+
+		__WFE(); //Wait for Event
 				// This Instruction waits for an interrupt to wake up the processor; executing this makes the processor going to sleep immediately
+				//if an event is not pending; if any is pending first it is cleared and then processor continues normal execution without going to sleep
+
+		HAL_ResumeTick();		//Resumes systick
 	}
 
 }
@@ -52,6 +75,7 @@ void GPIO_Init()
 	__HAL_RCC_GPIOA_CLK_SLEEP_DISABLE(); // Can't be done for PORTC as that is our WAKEUP source,
 										// which needs to be alive when processor goes to sleep
 
+
 	GPIO_InitTypeDef Gpio;
 
 	Gpio.Mode = GPIO_MODE_OUTPUT_PP;
@@ -62,28 +86,18 @@ void GPIO_Init()
 	HAL_GPIO_Init(GPIOA, &Gpio);
 
 	Gpio.Pin = GPIO_PIN_12;
-	Gpio.Mode = GPIO_MODE_IT_RISING;
-	Gpio.Pull = GPIO_PULLUP;
+	Gpio.Mode = GPIO_MODE_EVT_RISING;
+	Gpio.Pull = GPIO_PULLDOWN;
 
 	HAL_GPIO_Init(GPIOC, &Gpio);
 
-	HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 1);
-	HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+//	HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 1);
+//	HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 
-	static int i = 0;
-	char msg[50];
-	if(GPIO_Pin == GPIO_PIN_12)
-	{
-		sprintf(msg,"Testing WFI instruction %d\n\r", i++);
-		if(HAL_UART_Transmit_IT(&HUart2, (uint8_t*)msg, strlen(msg)) != HAL_OK)
-		{
-			Err_Handler();
-		}
-	}
 }
 
 void GPIO_AnalogConfig(void)
@@ -107,5 +121,4 @@ void GPIO_AnalogConfig(void)
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-//	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 }
