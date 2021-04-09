@@ -10,17 +10,19 @@
  * This project is aimed at reducing power consumption by limiting peripherals but not thier usages
  *
  * 1) Increasing UART speed to highest permissible and practical rate helps keeping current consumption low
- * 2)
+ * 2) Using WFE instruction to put the processor in sleep and wait for an event to occur
+ *
  *************************************************************************************/
 
 #include "main.h"
 
 extern UART_HandleTypeDef HUart2;
 
-#define SEVONPEND 4
-
+void SystemClock_Config();
 void GPIO_AnalogConfig();
+
 char msg[50];
+static int i = 0;
 
 int main(void)
 {
@@ -33,15 +35,13 @@ int main(void)
 	GPIO_Init();
 	UART2_Init();
 
-	//SCB->SCR |= (0x1 << SEVONPEND);
 
 	while(1)
 	{
 
-		static int i = 0;
-		sprintf(msg,"Testing WFI instruction %d\n\r", i++);
+		sprintf(msg,"Testing WFE instruction %d\n\r", i++);
 
-		//for(uint16_t j=0; j<300000; j++); doesn't works
+		//for(uint16_t j=0; j<300000; j++); doesn't work
 
 		if(HAL_UART_Transmit(&HUart2, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY) != HAL_OK)
 		{
@@ -54,9 +54,10 @@ int main(void)
 		 */
 		HAL_SuspendTick();
 
-		__WFE(); //Wait for Event
-				// This Instruction waits for an interrupt to wake up the processor; executing this makes the processor going to sleep immediately
-				//if an event is not pending; if any is pending first it is cleared and then processor continues normal execution without going to sleep
+		__WFE();	//Wait for Event
+					// This Instruction waits for an interrupt to wake up the processor; executing this makes the processor going to sleep immediately
+					//if an event is not pending; if any is pending first it is cleared and then processor continues normal execution without going to sleep
+		__WFE();	// 2 WFI helps to slow down input process
 
 		HAL_ResumeTick();		//Resumes systick
 	}
@@ -97,7 +98,7 @@ void GPIO_Init()
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-
+	//no need
 }
 
 void GPIO_AnalogConfig(void)
