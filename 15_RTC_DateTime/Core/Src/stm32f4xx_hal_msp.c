@@ -6,6 +6,7 @@
  */
 
 #include "stm32f4xx_hal.h"
+#include "main.h"
 
 #define USAGEFAULTEN 	18
 #define BUSFAULTEN 		17
@@ -59,7 +60,7 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef* hrtc)
 	//Turn on he LSE
 	RCC_OscInitTypeDef RTC_OscConfig;
 	RTC_OscConfig.OscillatorType = RCC_OSCILLATORTYPE_LSE;
-	RTC_OscConfig.HSEState = RCC_LSE_ON;
+	RTC_OscConfig.LSEState = RCC_LSE_ON;
 
 	//2.Select LSE as RTC clk
 	RCC_PeriphCLKInitTypeDef RTC_PeriClkConfig;
@@ -69,7 +70,9 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef* hrtc)
 	//Enable the LSE Osc and peripheral clock
 	if(HAL_RCC_OscConfig(&RTC_OscConfig) != HAL_OK) Err_Handler();
 	if(HAL_RCCEx_PeriphCLKConfig(&RTC_PeriClkConfig) != HAL_OK) Err_Handler();
+
 	__HAL_RCC_RTC_ENABLE();
+
 }
 /*******************************************************************************************************
  * 			THIS SECTION IS FOR USE WITH MAIN.C FILE TO DECLUTTER THE MAIN SECTION FROM UNWANTED
@@ -346,7 +349,7 @@ void GPIO_Init()
 
 	Gpio.Mode = GPIO_MODE_IT_RISING;
 	Gpio.Pin = GPIO_PIN_13;
-	Gpio.Pull = GPIO_NOPULL;
+	Gpio.Pull = GPIO_PULLUP;
 	Gpio.Speed = GPIO_SPEED_LOW;
 
 	HAL_GPIO_Init(GPIOC, &Gpio);

@@ -15,8 +15,7 @@ void RTC_CalConfig(void);
 
 extern UART_HandleTypeDef HUart2;
 RTC_HandleTypeDef HRtc;
-RTC_TimeTypeDef  HRtcTime;
-RTC_DateTypeDef  HRtcDate;
+char str[50];
 
 void printMsg(char *format,...)
 {
@@ -35,14 +34,19 @@ int main(void)
 {
 	HAL_Init();
 
-	SystemClockConfigHSI(RCC_SYSCLK_FREQ_25MHZ);
+	SystemClockConfigHSE(RCC_SYSCLK_FREQ_25MHZ);
 	//__HAL_RCC_HSI_DISABLE(); use wisely live well
 	GPIO_Init();
 	UART2_Init();
 
 	RTC_Init();
+	RTC_CalConfig();
 
-	while(1);
+
+	while(1)
+	{
+		//HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON,PWR_SLEEPENTRY_WFI );
+	}
 
 }
 
@@ -50,9 +54,9 @@ void RTC_Init()
 {
 
 	HRtc.Instance = RTC;
-	HRtc.Init.HourFormat = RTC_HOURFORMAT_24;
-	HRtc.Init.AsynchPrediv = 127;
-	HRtc.Init.SynchPrediv = 255;
+	HRtc.Init.HourFormat = RTC_HOURFORMAT_12;
+	HRtc.Init.AsynchPrediv = 0x7F;
+	HRtc.Init.SynchPrediv = 0xFF;
 	HRtc.Init.OutPut = RTC_OUTPUT_DISABLE;
 
 	if(HAL_RTC_Init(&HRtc) != HAL_OK) Err_Handler();
@@ -62,48 +66,46 @@ void RTC_Init()
 void RTC_CalConfig(void)
 {
 	//This function initilizes the RTC calender unit
+//	memset(&HRtcDate,0, sizeof(HRtcDate));
+//	memset(&HRtcTime,0, sizeof(HRtcTime));
+	RTC_TimeTypeDef  HRtcTime;
+	RTC_DateTypeDef  HRtcDate;
 
-	HRtcTime.Hours = 0x19;
-	HRtcTime.Minutes = 0x01;
-	HRtcTime.Seconds = 0x00;
+	HRtcTime.Hours 		= 0x11;
+	HRtcTime.Minutes 	= 0x59;
+	HRtcTime.Seconds 	= 0x30;
+	HRtcTime.TimeFormat = RTC_HOURFORMAT12_PM;
 
 	if(HAL_RTC_SetTime(&HRtc, &HRtcTime, RTC_FORMAT_BCD) != HAL_OK) Err_Handler();
 
-	HRtcDate.Date = 0x14;
-	HRtcDate.WeekDay = RTC_WEEKDAY_TUESDAY;
-	HRtcDate.Month = RTC_MONTH_APRIL;
-	HRtcDate.Year = 0x21;
+	HRtcDate.Date 		= 16;
+	HRtcDate.WeekDay 	= RTC_WEEKDAY_FRIDAY;
+	HRtcDate.Month 		= RTC_MONTH_APRIL;
+	HRtcDate.Year 		= 21;
 
-	if(HAL_RTC_SetDate(&HRtc, &HRtcDate,RTC_FORMAT_BCD) != HAL_OK) Err_Handler();
+	if(HAL_RTC_SetDate(&HRtc, &HRtcDate,RTC_FORMAT_BIN) != HAL_OK) Err_Handler();
 
 }
 
-void HAL_GPIO_EXTI_IRQHandler(uint16_t pin)
+void HAL_GPIO_EXTI_Callback(uint16_t pin)
 {
-	char str[40];
 
 	if(pin == GPIO_PIN_13)
 	{
-		if(HAL_RTC_GetTime(&HRtc, &HRtcTime, RTC_FORMAT_BCD) != HAL_OK) Err_Handler();
+		RTC_TimeTypeDef  HRtcTimeR;
+		RTC_DateTypeDef  HRtcDateR;
+
+		if(HAL_RTC_GetTime(&HRtc, &HRtcTimeR, RTC_FORMAT_BIN) != HAL_OK) Err_Handler();
+		if(HAL_RTC_GetDate(&HRtc, &HRtcDateR, RTC_FORMAT_BIN) != HAL_OK) Err_Handler();
+
+		sprintf(str, "The time is %02d:%02d:%02d %s\n\r", HRtcTimeR.Hours, HRtcTimeR.Minutes,HRtcTimeR.Seconds, ((HRtcTimeR.TimeFormat == 0x0) ? " AM" : " PM"));
+		printMsg(str);
+
+		sprintf(str, "The date is %02d-%02d-%02d\n\n\r", HRtcDateR.Date , HRtcDateR.Month , HRtcDateR.Year);
+		printMsg(str);
+
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
