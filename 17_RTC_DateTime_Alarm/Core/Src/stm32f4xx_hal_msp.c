@@ -50,8 +50,8 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 	HAL_GPIO_Init(GPIOA, &gpio_uart); 		//Rx configuration
 
 	//3.Enable the IRQ and set up the priority (NVIC Setting)
+	HAL_NVIC_SetPriority(USART2_IRQn, 15, 0);
 	HAL_NVIC_EnableIRQ(USART2_IRQn);
-	HAL_NVIC_SetPriority(USART2_IRQn, 2, 0);
 }
 
 void HAL_RTC_MspInit(RTC_HandleTypeDef* hrtc)
@@ -74,6 +74,9 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef* hrtc)
 	//Now supply clk to the RTC
 	__HAL_RCC_RTC_ENABLE();
 
+	//ENable the RTC alarm IRQ in the NVIC
+	HAL_NVIC_SetPriority(RTC_Alarm_IRQn, 15, 0);
+	HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn);
 }
 /*******************************************************************************************************
  * 			THIS SECTION IS FOR USE WITH MAIN.C FILE TO DECLUTTER THE MAIN SECTION FROM UNWANTED
@@ -225,6 +228,7 @@ void SystemClockConfigHSE(uint8_t clk_freq)
 	HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 	HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
+	HAL_NVIC_SetPriority(SysTick_IRQn, 1, 0);
 
 }
 
@@ -316,6 +320,7 @@ void SystemClockConfigHSI(uint8_t SysFreq)
 	HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 	HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
+	HAL_NVIC_SetPriority(SysTick_IRQn, 0, 1);
 }
 
 void UART2_Init(void)
@@ -338,6 +343,7 @@ void UART2_Init(void)
 void GPIO_Init()
 {
 	GPIO_InitTypeDef Gpio;
+	__HAL_RCC_GPIOA_CLK_ENABLE();
 
 	Gpio.Mode = GPIO_MODE_OUTPUT_PP;
 	Gpio.Pin = GPIO_PIN_5;
@@ -349,12 +355,19 @@ void GPIO_Init()
 	__HAL_RCC_GPIOC_CLK_ENABLE();
 
 	Gpio.Mode = GPIO_MODE_IT_RISING;
-	Gpio.Pin = GPIO_PIN_13;
+	Gpio.Pin = GPIO_PIN_12;
 	Gpio.Pull = GPIO_PULLUP;
 	Gpio.Speed = GPIO_SPEED_LOW;
 
 	HAL_GPIO_Init(GPIOC, &Gpio);
 
+	Gpio.Mode = GPIO_MODE_OUTPUT_PP;
+	Gpio.Pin = GPIO_PIN_2;
+	Gpio.Speed = GPIO_SPEED_LOW;
+
+	HAL_GPIO_Init(GPIOA, &Gpio);
+
+	//Enable the SYSTICK IRQ to use HAL_Delay(); keeps its priority highest, such that it can preempt other functions
 	HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
 	HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }

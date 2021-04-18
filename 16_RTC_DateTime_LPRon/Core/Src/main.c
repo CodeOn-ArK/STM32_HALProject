@@ -44,16 +44,16 @@ int main(void)
 	RTC_CalConfig();
 
 
-	while(1);
+	while(1)
+	{
+		//HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON,PWR_SLEEPENTRY_WFI );
+	}
 
 }
 
 void RTC_Init()
 {
 
-	/*
-	 * Init the RTC in 12 Hr frmt
-	 */
 	HRtc.Instance = RTC;
 	HRtc.Init.HourFormat = RTC_HOURFORMAT_12;
 	HRtc.Init.AsynchPrediv = 0x7F;
@@ -67,34 +67,25 @@ void RTC_Init()
 void RTC_CalConfig(void)
 {
 	//This function initilizes the RTC calender unit
+//	memset(&HRtcDate,0, sizeof(HRtcDate));
+//	memset(&HRtcTime,0, sizeof(HRtcTime));
 	RTC_TimeTypeDef  HRtcTime;
 	RTC_DateTypeDef  HRtcDate;
 
-	memset(&HRtcDate,0, sizeof(HRtcDate));
-	memset(&HRtcTime,0, sizeof(HRtcTime));
-
-	//The current date is entered here
-	HRtcTime.Hours 		= 0x11;
-	HRtcTime.Minutes 	= 0x59;
-	HRtcTime.Seconds 	= 0x55;
+	HRtcTime.Hours 		= 0x02;
+	HRtcTime.Minutes 	= 0x21;
+	HRtcTime.Seconds 	= 0x00;
 	HRtcTime.TimeFormat = RTC_HOURFORMAT12_PM;
 
-	//This API is called to set the time in BCD format( Use Hex notation for BCD frmt )
 	if(HAL_RTC_SetTime(&HRtc, &HRtcTime, RTC_FORMAT_BCD) != HAL_OK) Err_Handler();
 
-	//The current date is entered here
 	HRtcDate.Date 		= 17;
 	HRtcDate.WeekDay 	= RTC_WEEKDAY_SATURDAY;
 	HRtcDate.Month 		= RTC_MONTH_APRIL;
 	HRtcDate.Year 		= 21;
 
-	//This API is called to set the date in BIN frmt
 	if(HAL_RTC_SetDate(&HRtc, &HRtcDate,RTC_FORMAT_BIN) != HAL_OK) Err_Handler();
 
-	/*
-	 * This setup is lost everytime the board is reset since the LPR is not configured yet;
-	 * hence a board reset, resets the RTC to the time entered here
-	 */
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t pin)
@@ -108,7 +99,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
 		if(HAL_RTC_GetTime(&HRtc, &HRtcTimeR, RTC_FORMAT_BIN) != HAL_OK) Err_Handler();
 		if(HAL_RTC_GetDate(&HRtc, &HRtcDateR, RTC_FORMAT_BIN) != HAL_OK) Err_Handler();
 
-		sprintf(str, "The time is %02d:%02d:%02d %s\n\r", HRtcTimeR.Hours, HRtcTimeR.Minutes,HRtcTimeR.Seconds, ((HRtcTimeR.TimeFormat == RTC_HOURFORMAT12_AM) ? " AM" : " PM"));
+		sprintf(str, "The time is %02d:%02d:%02d %s\n\r", HRtcTimeR.Hours, HRtcTimeR.Minutes,HRtcTimeR.Seconds, ((HRtcTimeR.TimeFormat == 0x0) ? " AM" : " PM"));
 		printMsg(str);
 
 		printMsg("The date is %02d-%02d-%02d  (%s)\n\n\r", HRtcDateR.Date , HRtcDateR.Month , HRtcDateR.Year, getDate(HRtcDateR.WeekDay));

@@ -71,7 +71,6 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef* hrtc)
 	if(HAL_RCC_OscConfig(&RTC_OscConfig) != HAL_OK) Err_Handler();
 	if(HAL_RCCEx_PeriphCLKConfig(&RTC_PeriClkConfig) != HAL_OK) Err_Handler();
 
-	//Now supply clk to the RTC
 	__HAL_RCC_RTC_ENABLE();
 
 }
