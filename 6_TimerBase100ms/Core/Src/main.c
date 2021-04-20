@@ -11,6 +11,8 @@
 void TIMER7_Init();
 void SystemClock_Config(void);
 
+#define TEST_UART CallUART()
+
 TIM_HandleTypeDef hTimer7;
 
 int main(void)
@@ -22,7 +24,8 @@ int main(void)
 	GPIO_Init();
 	TIMER7_Init();
 
-	CallUART();
+	TEST_UART;
+
 	//Timer starts working from here
 	HAL_TIM_Base_Start(&hTimer7);		//Timer ticks all the time, even if the processor goes to sleep!
 
