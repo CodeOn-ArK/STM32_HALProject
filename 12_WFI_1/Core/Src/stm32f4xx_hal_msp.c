@@ -4,6 +4,7 @@
  *  Created on: Feb 28, 2021
  *      Author: ark
  */
+#define LPM
 
 #include "stm32f4xx_hal.h"
 
@@ -35,7 +36,13 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 
 	//1.Enable the clock for the USART2 peripheral
 	__HAL_RCC_GPIOA_CLK_ENABLE();  //Macro to enable GPIO clk
+#ifdef LPM
+	__HAL_RCC_GPIOA_CLK_SLEEP_DISABLE();
+#endif
 	__HAL_RCC_USART2_CLK_ENABLE(); //Macro to enable USART2 clk
+#ifdef LPM
+	__HAL_RCC_USART2_CLK_SLEEP_DISABLE();
+#endif
 
 	//2.Do the pin muxing
 	gpio_uart.Pin = GPIO_PIN_2;
@@ -299,7 +306,7 @@ void SystemClockConfigHSI(uint8_t SysFreq)
 void UART2_Init(void)
 {
 	HUart2.Instance = USART2;
-	HUart2.Init.BaudRate = 9600; //460800; //Baud rate kept high to keep consumption low
+	HUart2.Init.BaudRate = 115200;//Baud rate kept high to keep consumption low
 	HUart2.Init.WordLength = UART_WORDLENGTH_8B;
 	HUart2.Init.StopBits = UART_STOPBITS_1;
 	HUart2.Init.Parity = UART_PARITY_NONE;
