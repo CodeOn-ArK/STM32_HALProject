@@ -5,7 +5,6 @@
  *      Author: ark
  */
 
-
 #include "main.h"
 
 void UART2_Init(void);
@@ -27,14 +26,17 @@ int main(void)
 	UART2_Init();
 	GPIO_Init();
 
-	TIM6->SR = 0x0;
+	//TIM6->SR = 0x0; 6,10
 
 	if(HAL_TIM_Base_Start_IT(&TIMHandle) != HAL_OK)
 	{
 		Err_Handler();
 	}
 
-	//SCB->SCR |= (1 << 1); //Or use HAL_PWR_EnableSleepOnExit()
+	//First do all the init then enable SOE
+
+	//SCB->SCR |= (1 << 1); Or use HAL_PWR_EnableSleepOnExit()
+	HAL_PWR_EnableSleepOnExit(); //with 4.7mA without 5.92mA
 
 	while(1);
 

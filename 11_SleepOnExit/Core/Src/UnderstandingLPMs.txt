@@ -1,0 +1,228 @@
+/**********************************
+ * This section tells abt LPM of STM32 both vendor specific and processor specific
+ *
+ * 						______________
+ * 						|	 		  |
+ * 						|	  LPM	  |
+ * 						|_____________|
+ * 							   |
+ * 							   |
+ * 							   |
+ * 							  /	\
+ * 							 / 	 \
+ * 							/	  \
+ * 						   /	   \
+ * 				__________/			\__________
+ * 				|Processor|			 |Vendor   |
+ * 				|Specific |			 |Specific |
+ * 				|LPM	  |			 |LPM	   |
+ * 				|_________|			 |_________|
+ *
+ *
+ * 						______________
+ * 						|	 		  |
+ * 						|	Processor |
+ * 						|     Modes	  |
+ * 						|_____________|
+ * 							   |
+ * 							   |
+ * 							   |
+ * 							  /	\
+ * 							 / 	 \
+ * 							/	  \
+ * 						   /	   \
+ * 				__________/			\__________
+ * 				|   	  |			 |		   |
+ * 				|   RUN	  |			 |   LPM   |
+ * 				|  Mode   |			 |		   |
+ * 				|_________|			 |_________|
+ *
+ *
+ *In Run mode processor consumes power without any power saving feature
+ *In LPM the processor can suspend any infinite loop and enter into LPM saving power
+ *
+ *
+ * 						______________
+ * 						|	 		  |
+ * 						|	  ARM	  |
+ * 						|   Cortex M4 |
+ * 						|_____________|
+ * 							   |
+ * 							   |
+ * 							   |
+ * 							  /	\
+ * 							 / 	 \
+ * 							/	  \
+ * 						   /	   \
+ * 		SLEEPDEEP RESET	  |			|	SLEEPDEEP SET
+ * 		        __________/			\__________
+ * 				| 		  |			 |		   |
+ * 				|  Normal |			 |  Deep   |
+ * 				|  Sleep  |			 |  Sleep  |
+ * 				|_________|			 |_________|
+ *
+ *	Instruction: WFI && WFE			Instruction: WFI && WFE
+ *	Feature : Sleep On Exit(SOE) 		Feature : Sleep On Exit
+ *
+ *1) Normal Sleep stops the processor clk
+ *2) Deep sleep the system clk and switches off the PLL && the flash mem
+ *
+ *
+ *			ENTERING SLEEP MODES
+ *		-----------------------------
+ *1) Follow the instructions/functions
+ *2) for Deep Sleep SLEEPDEEP(SCB) bit shld be SET
+ *
+ *********************************************
+ *Upon using the SOE feature, the processor after completing execution of ISR goes to SLEEP MODE IMMEDIATELY
+ *It doesn't do any instruction related unstacking i.e. it doesn't wait to go to the main func
+ *********************************************
+ *
+ *  Tips to reduce current consumption
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ *->Stopping clk to the processor and to some or all the peripherals
+ *->Reducing the clk freqq
+ *->Reducing voltage to various parts to the uC
+ *->Turning off the power supply to some parts of the uC
+ *->Keeping unused pins in analog mode
+ *->Increase UART baud
+ *
+ * ***************************************************************** *
+ *
+ * 					Generating Peripheral events
+ *
+ * ***************************************************************** *
+ *
+ *1) Execute the SEV instruction
+ *
+ *2) Use peripheral interrupt as an event
+ *-> Make SEVONPEND bit as 1
+ *-> Disable peripheral interrupt in the NVIC
+ *-> Make peripheral issue an interrupt
+ *-> Applicable to all peripherals
+ *
+ *3) Use peripheral event;
+ *-> Applicable to some peripherals
+ *
+ *     REGULTORS
+ *---------------------
+ *
+ *Two regulators -> 1)Main Regulator
+ *					2)LP Reg
+ *
+ *
+ *
+ *MAIN REGULATOR													LOW POWER REGULATOR
+ * |																| 
+ * |____ NORMAL Mode												|____ NORMAL Mode	 
+ * |																|
+ * |____ OVER DRIVE Mode											|____ OVER DRIVE Mode
+ * |																|
+ * |____ UNDER DRIVE Mode											|____ UNDER DRIVE Mode
+ * |																|
+ * |____ POWER Drive												|____ POWER Drive
+ *	
+ *
+ * MR or LPR can be configured by using the LPDS bit in the PWR power control Register(PWR_CR)
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * SLEEP MODE
+ *---------------
+ *- only CPU stopped
+ *- all peri continue to operate and can wake up CPU when an interrupt occcurs
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+
+ **********************************/

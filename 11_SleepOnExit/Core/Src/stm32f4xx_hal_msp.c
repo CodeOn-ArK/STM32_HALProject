@@ -62,7 +62,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
 }
 /*******************************************************************************************************
  * 			THIS SECTION IS FOR USE WITH MAIN.C FILE TO DECLUTTER THE MAIN SECTION FROM UNWANTED
- * 												REFERENCES
+ * 											REFERENCES
  *
  *******************************************************************************************************/
 
