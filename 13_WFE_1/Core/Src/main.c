@@ -31,17 +31,14 @@ int main(void)
 	SystemClock_Config();	//Choose HSI over PLL or HSE; consumes lesser power
 	//SystemClockConfigHSE(RCC_SYSCLK_FREQ_25MHZ);
 	//__HAL_RCC_HSI_DISABLE(); use wisely live well
-	GPIO_AnalogConfig();
+//	GPIO_AnalogConfig();
 	GPIO_Init();
 	UART2_Init();
-
 
 	while(1)
 	{
 
 		sprintf(msg,"Testing WFE instruction %d\n\r", i++);
-
-		//for(uint16_t j=0; j<300000; j++); doesn't work
 
 		if(HAL_UART_Transmit(&HUart2, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY) != HAL_OK)
 		{
@@ -69,7 +66,7 @@ void GPIO_Init()
 {
 	/*
 	 * Use only required Peripherals!!
-	 * GPIOA not needed , but kept only for demonstration puraposes
+	 * GPIOA not needed , but kept only for demonstration purposes
 	 */
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	__HAL_RCC_GPIOC_CLK_ENABLE();
@@ -86,14 +83,15 @@ void GPIO_Init()
 
 	HAL_GPIO_Init(GPIOA, &Gpio);
 
-	Gpio.Pin = GPIO_PIN_12;
-	Gpio.Mode = GPIO_MODE_EVT_RISING;
-	Gpio.Pull = GPIO_PULLDOWN;
+	Gpio.Pin = GPIO_PIN_13;
+	Gpio.Mode = GPIO_MODE_EVT_FALLING;
+	Gpio.Pull = GPIO_PULLUP;
 
 	HAL_GPIO_Init(GPIOC, &Gpio);
 
-//	HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 1);
-//	HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+	//HAL_NVIC_SetPriority(EXTI15_10_IRQn, 1, 0);
+	//HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
+	//HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)

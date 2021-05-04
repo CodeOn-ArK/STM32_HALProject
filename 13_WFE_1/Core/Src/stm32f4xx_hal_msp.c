@@ -49,8 +49,8 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 	HAL_GPIO_Init(GPIOA, &gpio_uart); 		//Rx configuration
 
 	//3.Enable the IRQ and set up the priority (NVIC Setting)
-	HAL_NVIC_EnableIRQ(USART2_IRQn);
-	HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
+//	HAL_NVIC_EnableIRQ(USART2_IRQn);
+//	HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
 }
 
 /*******************************************************************************************************
@@ -97,6 +97,9 @@ void SystemClock_Config(void)
   {
     Err_Handler();
   }
+
+  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(SysTick_IRQn);
 }
 
 void SystemClockConfigHSE(uint8_t clk_freq)
@@ -299,7 +302,7 @@ void SystemClockConfigHSI(uint8_t SysFreq)
 void UART2_Init(void)
 {
 	HUart2.Instance = USART2;
-	HUart2.Init.BaudRate = 460800; //Baud rate kept high to keep consumption low
+	HUart2.Init.BaudRate = 115200; //Baud rate kept high to keep consumption low
 	HUart2.Init.WordLength = UART_WORDLENGTH_8B;
 	HUart2.Init.StopBits = UART_STOPBITS_1;
 	HUart2.Init.Parity = UART_PARITY_NONE;
