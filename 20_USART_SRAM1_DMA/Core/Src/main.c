@@ -37,6 +37,9 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 
+#define OFFSET 		0x300
+#define DEST_ADDR 	(SRAM1_BASE + OFFSET)
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -101,11 +104,17 @@ int main(void)
   {
     /* USER CODE END WHILE */
 
+	  HAL_UART_Receive_DMA(&huart2, (uint8_t *)DEST_ADDR, 10);
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  UNUSED(huart);
+}
 /**
   * @brief System Clock Configuration
   * @retval None
