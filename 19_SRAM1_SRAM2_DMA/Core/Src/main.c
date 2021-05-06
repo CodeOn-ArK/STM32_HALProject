@@ -48,7 +48,7 @@ DMA_HandleTypeDef hdma_memtomem_dma2_stream0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
-void dma_txfer_cplt_cb(DMA_HandleTypeDef *pHandle);
+void dma_txfer_cplt_cb();
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
@@ -70,7 +70,7 @@ static void MX_USART2_UART_Init(void);
 
 int main(void)
 {
-	uint16_t mem_transfer[10];
+	uint8_t mem_transfer[10];
 
 	memset(mem_transfer, 0xBB, sizeof(mem_transfer));
   /* USER CODE BEGIN 1 */
@@ -99,7 +99,8 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_DMA_RegisterCallback(&hdma_memtomem_dma2_stream0, HAL_DMA_XFER_HALFCPLT_CB_ID, &dma_txfer_cplt_cb);
+ //Callback for DMA
+  HAL_DMA_RegisterCallback(&hdma_memtomem_dma2_stream0, HAL_DMA_XFER_CPLT_CB_ID, &dma_txfer_cplt_cb);
 
   /* USER CODE END 2 */
 
@@ -108,14 +109,14 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  HAL_DMA_Start_IT(&hdma_memtomem_dma2_stream0, mem_transfer, (uint32_t)SRAM2_BASE, 10);
+	  HAL_DMA_Start_IT(&hdma_memtomem_dma2_stream0, (uint32_t)mem_transfer, (uint32_t)SRAM2_BASE, 10);
 
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
 
-void dma_txfer_cplt_cb(DMA_HandleTypeDef *pHandle)
+void dma_txfer_cplt_cb()
 {
 	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 }

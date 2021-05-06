@@ -68,15 +68,18 @@
  *2) Deep sleep the system clk and switches off the PLL && the flash mem
  *
  *
+ *
  *			ENTERING SLEEP MODES
  *		-----------------------------
  *1) Follow the instructions/functions
  *2) for Deep Sleep SLEEPDEEP(SCB) bit shld be SET
  *
+ *
  *********************************************
  *Upon using the SOE feature, the processor after completing execution of ISR goes to SLEEP MODE IMMEDIATELY
  *It doesn't do any instruction related unstacking i.e. it doesn't wait to go to the main func
  *********************************************
+ *
  *
  *  Tips to reduce current consumption
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -88,11 +91,14 @@
  *->Keeping unused pins in analog mode
  *->Increase UART baud
  *
+ *
+ *
  * ***************************************************************** *
  *
  * 					Generating Peripheral events
  *
  * ***************************************************************** *
+ *
  *
  *1) Execute the SEV instruction
  *
@@ -105,6 +111,7 @@
  *3) Use peripheral event;
  *-> Applicable to some peripherals
  *
+ *
  *     REGULTORS
  *---------------------
  *
@@ -113,28 +120,31 @@
  *
  *
  *
- *MAIN REGULATOR													LOW POWER REGULATOR
- * |																| 
- * |____ NORMAL Mode												|____ NORMAL Mode	 
- * |																|
- * |____ OVER DRIVE Mode											|____ OVER DRIVE Mode
- * |																|
- * |____ UNDER DRIVE Mode											|____ UNDER DRIVE Mode
- * |																|
- * |____ POWER Drive												|____ POWER Drive
+ * MAIN REGULATOR													LOW POWER REGULATOR
+ *  |																| 
+ *  |____ NORMAL Mode												|____ NORMAL Mode	 
+ *  |																|
+ *  |____ OVER DRIVE Mode											|____ OVER DRIVE Mode
+ *  |																|
+ *  |____ UNDER DRIVE Mode											|____ UNDER DRIVE Mode
+ *  |																|
+ *  |____ POWER Drive												|____ POWER Drive
  *	
+ *
  *
  * MR or LPR can be configured by using the LPDS bit in the PWR power control Register(PWR_CR)
  *
+ * NORMAL MODE: 	 -> The CPU and core logic operate at maximum frequency at a given voletage scaling(scale 1, scale 2, scale 3)
+ * 					 -> Voltage Scaling can be configured by VOS bit in PWR_CR
+ *  				 -> Can be used in RUN or STOP mode or Sleep mode
+ * 
+ * OVERDRIVE MODE: 	 -> The CPU when using 180MHz consumes highest voltage, more than 1.2V, thus necessitating. 
  *
+ * UNDER DRIVE MODE: -> Reduces leakage current when in STOP mode
+ *					 -> Automatically disabled after exiting STOP mode
  *
- *
- *
- *
- *
- *
- *
- *
+ * POWER MODE: 		 -> Used in STANDBY mode
+ *			   		 -> Contents of Registers lost, The regulator outputs 0v. 
  *
  *
  * SLEEP MODE
