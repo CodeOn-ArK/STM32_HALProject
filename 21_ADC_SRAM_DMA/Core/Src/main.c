@@ -155,6 +155,10 @@ void SystemClock_Config(void)
   }
 }
 
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+  UNUSED(hadc);
+}
 /**
   * @brief ADC1 Initialization Function
   * @param None
