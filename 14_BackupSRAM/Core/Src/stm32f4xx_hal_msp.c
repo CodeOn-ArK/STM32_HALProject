@@ -298,13 +298,13 @@ void SystemClockConfigHSI(uint8_t SysFreq)
 
 void UART2_Init(void)
 {
-	HUart2.Instance = USART2;
-	HUart2.Init.BaudRate = 115200;
-	HUart2.Init.WordLength = UART_WORDLENGTH_8B;
-	HUart2.Init.StopBits = UART_STOPBITS_1;
-	HUart2.Init.Parity = UART_PARITY_NONE;
-	HUart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	HUart2.Init.Mode = UART_MODE_TX_RX;
+	HUart2.Instance 		= USART2;
+	HUart2.Init.BaudRate 	= 115200;
+	HUart2.Init.WordLength 	= UART_WORDLENGTH_8B;
+	HUart2.Init.StopBits 	= UART_STOPBITS_1;
+	HUart2.Init.Parity 		= UART_PARITY_NONE;
+	HUart2.Init.HwFlowCtl 	= UART_HWCONTROL_NONE;
+	HUart2.Init.Mode 		= UART_MODE_TX_RX;
 
 	if(HAL_UART_Init(&HUart2) != HAL_OK)
 	{
@@ -315,14 +315,24 @@ void UART2_Init(void)
 
 void GPIO_Init()
 {
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOC_CLK_ENABLE();
+
 	GPIO_InitTypeDef Gpio;
 
-	Gpio.Mode = GPIO_MODE_OUTPUT_PP;
-	Gpio.Pin = GPIO_PIN_5;
-	Gpio.Pull = GPIO_NOPULL;
-	Gpio.Speed = GPIO_SPEED_LOW;
+	Gpio.Mode 	= GPIO_MODE_OUTPUT_PP;
+	Gpio.Pin 	= GPIO_PIN_5;
+	Gpio.Pull 	= GPIO_NOPULL;
+	Gpio.Speed 	= GPIO_SPEED_LOW;
 
 	HAL_GPIO_Init(GPIOA, &Gpio);
+
+	Gpio.Mode 	= GPIO_MODE_INPUT;
+	Gpio.Pin 	= GPIO_PIN_12;
+	Gpio.Pull 	= GPIO_PULLUP;
+	Gpio.Speed 	= GPIO_SPEED_FAST;
+
+	HAL_GPIO_Init(GPIOC, &Gpio);
 
 }
 
