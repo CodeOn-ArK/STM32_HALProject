@@ -152,7 +152,7 @@
  *- only CPU stopped
  *- all peri continue to operate and can wake up CPU when an interrupt occcurs
  *
- *
+ * watch vid 189 for more info
  *
  *
  *

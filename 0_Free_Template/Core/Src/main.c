@@ -7,6 +7,22 @@
 
 
 #include "main.h"
+#include<stdarg.h>
+
+void printMsg(char *format,...);
+
+void printMsg(char *format,...)
+{
+	char str[80];
+
+	/*extract the arg list using VA APIs */
+	va_list args;
+	va_start(args, format);
+	vsprintf(str, format, args);
+
+	HAL_UART_Transmit(&HUart2, (uint8_t *)str, strlen(str), HAL_MAX_DELAY);
+	va_end(args);
+}
 
 int main(void)
 {
