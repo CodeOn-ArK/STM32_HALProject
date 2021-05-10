@@ -50,7 +50,8 @@ DMA_HandleTypeDef hdma_memtomem_dma2_stream0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
-void dma_txfer_cplt_cb(DMA_HandleTypeDef *pHandle);
+void dma_half_txfer_cplt_cb(DMA_HandleTypeDef *pHandle);
+void dma_full_txfer_cplt_cb(DMA_HandleTypeDef *pHandle);
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
@@ -95,12 +96,12 @@ int main(void)
   MX_DMA_Init();
   MX_USART2_UART_Init();
 
-  HAL_DMA_RegisterCallback(&hdma_memtomem_dma2_stream0, HAL_DMA_XFER_CPLT_CB_ID, &dma_txfer_cplt_cb);
+  HAL_DMA_RegisterCallback(&hdma_memtomem_dma2_stream0, HAL_DMA_XFER_HALFCPLT_CB_ID, &dma_half_txfer_cplt_cb);
 
   uint8_t i =0 ;
   while (1)
   {
-	  HAL_DMA_Start_IT(&hdma_memtomem_dma2_stream0, (uint32_t)&led[i%2], &GPIOA->ODR, 1);
+	  HAL_DMA_Start_IT(&hdma_memtomem_dma2_stream0, (uint32_t)&led[i%2], (uint32_t)&GPIOA->ODR, 2);
 	  i++;
 
 	  HAL_Delay(1000);
@@ -108,11 +109,15 @@ int main(void)
   }
 }
 
-void dma_txfer_cplt_cb(DMA_HandleTypeDef *pHandle)
+void dma_half_txfer_cplt_cb(DMA_HandleTypeDef *pHandle)
 {
 
 }
 
+void dma_full_txfer_cplt_cb(DMA_HandleTypeDef *pHandle)
+{
+
+}
 /**
   * @brief System Clock Configuration
   * @retval None
