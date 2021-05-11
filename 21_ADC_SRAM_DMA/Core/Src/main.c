@@ -19,7 +19,11 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include<string.h>
+#include<math.h>
+#include<stdio.h>
 
+#define V25 (76/100)
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -44,7 +48,11 @@ ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
 
 UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart2_tx;
 
+static uint8_t ADC_TXFR_CMPLT_FLAG = 0;
+static double sum = 0;
+static double Vavg = 0;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -57,10 +65,14 @@ static void MX_USART2_UART_Init(void);
 static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
 
+void MY_ADC_CMPLT_CB(DMA_HandleTypeDef *);
+void MY_USART_CMPLT_CB(DMA_HandleTypeDef *);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+extern uint16_t temp_data[16];
 
 /* USER CODE END 0 */
 
@@ -97,17 +109,58 @@ int main(void)
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
+  HAL_DMA_RegisterCallback(&hdma_adc1, HAL_DMA_XFER_CPLT_CB_ID, &MY_ADC_CMPLT_CB);
+  HAL_DMA_RegisterCallback(&hdma_usart2_tx, HAL_DMA_XFER_CPLT_CB_ID, &MY_USART_CMPLT_CB);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint8_t i=0;
+  char str[30];
+
   while (1)
   {
     /* USER CODE END WHILE */
 
+	  if(ADC_TXFR_CMPLT_FLAG == 1)
+	  {
+		  sum = 0;
+
+		  while(i < 16)
+		  {
+			  sum += temp_data[i++];
+		  }
+
+		  sum /= 16;
+
+		  sum *= (double)3.3/ (pow(2.0,12.0) - 1.0);
+
+		  Vavg = (((double)sum - V25) / (double)2.50) + 25.0;
+
+		  sprintf(str, "\n\rThe temp is %lf", Vavg);
+
+		  HAL_UART_Transmit_DMA(&huart2, (uint8_t *)str, strlen(str));
+
+		  ADC_TXFR_CMPLT_FLAG = 0;
+	  }
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+  UNUSED(huart);
+
+  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+  UNUSED(hadc);
+
+  ADC_TXFR_CMPLT_FLAG = 1;
 }
 
 /**
@@ -155,10 +208,6 @@ void SystemClock_Config(void)
   }
 }
 
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
-  UNUSED(hadc);
-}
 /**
   * @brief ADC1 Initialization Function
   * @param None
@@ -250,8 +299,12 @@ static void MX_DMA_Init(void)
 
   /* DMA controller clock enable */
   __HAL_RCC_DMA2_CLK_ENABLE();
+  __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
+  /* DMA1_Stream6_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
   /* DMA2_Stream0_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
