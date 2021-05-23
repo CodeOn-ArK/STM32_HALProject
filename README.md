@@ -17,3 +17,14 @@ Various examples have been implemented ranging in the following topics ->
 - [x] DMA
 - [x] ADC
 
+
+## How to use this??
+
+-> Clone this repo into any directory
+-> Import the projects using STM32Cube IDE's Import WIZARD
+-> First clean the project u wish to work on
+-> Experiment && enjoy !!
+
+~~~
+Contributions accepted generously
+~~~
